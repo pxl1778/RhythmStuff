@@ -26,6 +26,14 @@ public class Projectile : MonoBehaviour {
 
     public void Shoot(Vector2 pDirection)
     {
-        rb.velocity = pDirection * speed;
+        if (rb)
+        {
+            rb.velocity = pDirection * speed;
+        }
+        else
+        {
+            rb = GetComponent<Rigidbody2D>();
+            rb.velocity = pDirection * speed;
+        }
     }
 }
