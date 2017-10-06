@@ -46,4 +46,17 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-RhythmPractice\Temp
+Temp/
+Library/
+UnityGenerated/
+
+ExportedObj/
+*.svd
+*.userprefs
+*.csproj
+*.pidb
+*.suo
+*.sln
+*.user
+*.unityproj
+*.booproj
