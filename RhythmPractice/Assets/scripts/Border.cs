@@ -6,10 +6,13 @@ public class Border : MonoBehaviour {
     private float timePassed = 0;
     private AudioSource audioSource;
     public float maxTime;
+    public SpriteRenderer borderSprite;
 
 	// Use this for initialization
 	void Start () {
         audioSource = GetComponent<AudioSource>();
+        borderSprite = this.transform.GetComponent<SpriteRenderer>();
+        borderSprite.size = new Vector2((Camera.main.orthographicSize * 2.0f) * (Screen.width / Screen.height), Camera.main.orthographicSize * 2.0f);
     }
 	
 	// Update is called once per frame
@@ -18,12 +21,12 @@ public class Border : MonoBehaviour {
         if(timePassed >= maxTime)
         {
             timePassed = 0;
-            this.transform.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+            borderSprite.color = new Color(1, 1, 1, 1);
             audioSource.Play();
         }
         else
         {
-            this.transform.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, (timePassed / maxTime) / 1.5f);
+            borderSprite.color = new Color(1, 1, 1, (timePassed / maxTime) / 1.5f);
         }
 	}
 

@@ -11,12 +11,12 @@ public class Player : MonoBehaviour {
     public ParticleSystem movePS;
     public ParticleSystem drumPS;
     public float moveSpeed;
-    public float speedMultiplier;
     public float dodgeSpeed;
     public Projectile projectile;
 
+    private float speedMultiplier;
     private float dodgeTimer = 0;
-    private float dodgeTimerMax = .1f;
+    private float dodgeTimerMax = .2f;
     private float recoveryTimer = 0;
     private float recoveryTimerMax = .5f;
     private bool isRecovering = false;
@@ -25,6 +25,7 @@ public class Player : MonoBehaviour {
     private bool attacking = false;
     private Rigidbody2D rb;
     private SpriteRenderer sr;
+    private Animator animator;
     private Border border;
     private PLAYERSTATE state = PLAYERSTATE.IDLE;
 
@@ -32,7 +33,9 @@ public class Player : MonoBehaviour {
         staff = new Staff(this);
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
         border = GameObject.Find("border").GetComponent<Border>();
+        Debug.Log("border: " + border);
     }
 	
 	void Update () {
@@ -66,13 +69,26 @@ public class Player : MonoBehaviour {
             if(Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0)
             {
                 speedMultiplier = 1;
+                animator.SetBool("running", false);
             }
             else if (border.isCorrect())
             {
                 speedMultiplier = 2;
             }
+            if(Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
+            {
+                animator.SetBool("running", true);
+                animator.SetFloat("x", Input.GetAxisRaw("Horizontal"));
+                animator.SetFloat("y", Input.GetAxisRaw("Vertical"));
+            }
             rb.velocity = new Vector2(moveSpeed * Input.GetAxisRaw("Horizontal") * speedMultiplier, moveSpeed * Input.GetAxisRaw("Vertical") * speedMultiplier);
         }
+    }
+
+    private void HandleDirection()
+    {
+        animator.SetFloat("x", Input.GetAxisRaw("Horizontal"));
+        animator.SetFloat("y", Input.GetAxisRaw("Vertical"));
     }
 
     private void HandleDodgeInput()
@@ -86,6 +102,8 @@ public class Player : MonoBehaviour {
                 rb.velocity = new Vector2(0, dodgeSpeed);
                 GameObject.Instantiate(movePS, new Vector3(this.transform.position.x, this.transform.position.y + 2.5f, 0), Quaternion.identity, this.transform);
                 speedMultiplier = 2;
+                animator.SetBool("running", true);
+                HandleDirection();
             }
         }
         else if (Input.GetKeyDown(KeyCode.LeftArrow))
@@ -97,6 +115,8 @@ public class Player : MonoBehaviour {
                 rb.velocity = new Vector2(-dodgeSpeed, 0);
                 GameObject.Instantiate(movePS, new Vector3(this.transform.position.x - 2.5f, this.transform.position.y, 0), Quaternion.identity, this.transform);
                 speedMultiplier = 2;
+                animator.SetBool("running", true);
+                HandleDirection();
             }
         }
         else if (Input.GetKeyDown(KeyCode.RightArrow))
@@ -107,6 +127,8 @@ public class Player : MonoBehaviour {
                 state = PLAYERSTATE.DODGING;
                 rb.velocity = new Vector2(dodgeSpeed, 0);
                 speedMultiplier = 2;
+                animator.SetBool("running", true);
+                HandleDirection();
                 GameObject.Instantiate(movePS, new Vector3(this.transform.position.x + 2.5f, this.transform.position.y, 0), Quaternion.identity, this.transform);
             }
         }
@@ -118,6 +140,8 @@ public class Player : MonoBehaviour {
                 state = PLAYERSTATE.DODGING;
                 rb.velocity = new Vector2(0, -dodgeSpeed);
                 speedMultiplier = 2;
+                animator.SetBool("running", true);
+                HandleDirection();
                 GameObject.Instantiate(movePS, new Vector3(this.transform.position.x, this.transform.position.y - 2.5f, 0), Quaternion.identity, this.transform);
             }
         }
